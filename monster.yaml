@@ -1,0 +1,20 @@
+bad_guy:
+    health: 15
+    maxhp: 15
+    attacks:
+        hit:
+            attack: 2
+            heal: 0
+            shield: 0
+            harm: 0
+        heal:
+            attack: 0
+            heal: 3
+            shield: 0
+            harm: 0
+        raw:
+            attack: 6
+            heal: 0
+            shield: 0
+            harm: 4
+    challange: 1

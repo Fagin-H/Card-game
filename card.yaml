@@ -1,0 +1,40 @@
+smash:
+    cost: 1
+    attack: 3
+    heal: 0
+    shield: 0
+    harm: 0
+    rarity: 1
+    dcr: 'Hits for 3 damage, costs 1 gold.'
+bash:
+    cost: 5
+    attack: 10
+    heal: 0
+    shield: 0
+    harm: 0
+    rarity: 2
+    dcr: 'Hits for 10 damage, costs 5 gold.'
+chill:
+    cost: 0
+    attack: 0
+    heal: 3
+    shield: 0
+    harm: 0
+    rarity: 1
+    dcr: 'Heals 3 health, costs no gold.'
+headbut:
+    cost: 1
+    attack: 5
+    heal: 0
+    shield: 0
+    harm: 2
+    rarity: 1
+    dcr: 'Hits for 5 damage, harms for 2, costs 1 gold'
+loot:
+    cost: -3
+    attack: 0
+    heal: 0
+    shield: 0
+    harm: 0
+    rarity: 1
+    dcr: 'Gain 3 gold'

@@ -17,7 +17,8 @@ class deck:
         self.cards = cards
 
 class card:
-    def __init__(self, cost, effect, rarity):
+    def __init__(self, name, cost, effect, rarity):
+        self.name = name
         self.cost = cost
         self.effect = effect
         self.rarity = rarity
