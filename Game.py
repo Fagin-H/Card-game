@@ -10,29 +10,31 @@ import time
 import random
 
 
-def play_turn():
+def play_turn(monster):
     
     me['shield']=0
     
     crd=pick_card()
     
     while crd[0] == '!':
-        if show_info(crd) == 1:
-            return 1
+        if show_info(crd, monster) == 1:
+            return 0, monster, 0
         crd=pick_card()
     
     if crd != 'pass':
         crd=check_price(crd)
-        play_card(crd)
+        monster = play_card(crd, monster)
         time.sleep(2)
-    if monster_turn() == 1:
-        time.sleep(2)
-        return 1
+        monster = monster_turn(monster)
     time.sleep(2)
-    return check_stats()
+    status = check_stats(monster)
+    if status == 0:
+        return 1, monster, status
+    else:
+        return 0, monster, status
 
 
-def show_info(crd):
+def show_info(crd, monster):
     if crd == '!halp':
         print()
         print('List of commands:')
@@ -57,7 +59,7 @@ def show_info(crd):
         print('Your health is '+str(me['health']))
         print()
     elif crd == '!show monster':
-        print('Monsters health is '+str(monster1['health']))
+        print('Monsters health is '+str(monster['health']))
         print()
     else:
         print('Not a command')
@@ -65,21 +67,22 @@ def show_info(crd):
     return 0
 
 
-def monster_turn():
-    if monster1['health']<1:
-        print('You win')
-        return 1
+def monster_turn(monster):
+    if monster['health']<1:
+        return monster
     else:
-        mcard=monster_card()
+        mcard=monster_card(monster)
         
-        if monster1['health'] + mcard['heal'] > monster1['maxhp']:
-            heal = monster1['maxhp'] - monster1['health']
-            monster1['health'] = monster1['maxhp']
+        if monster['health'] + mcard['heal'] > monster['maxhp']:
+            heal = monster['maxhp'] - monster['health']
+            monster['health'] = monster['maxhp']
         else:
-            monster1['health'] += mcard['heal']
+            monster['health'] += mcard['heal']
             heal = mcard['heal']
                 
-        monster1['health']+=-mcard['harm']
+        monster['health']+=-mcard['harm']
+        
+        monster['shield'] += mcard['shield']
         
         damages=mcard['attack']
         if damages > me['shield']:
@@ -100,38 +103,37 @@ def monster_turn():
         if mcard['heal'] != 0:
             print('Monster heals '+str(heal)+' health')
             
+        if mcard['shield'] != 0:
+            print('Monster gains '+str(mcard['shield'])+' shield')
+            
         if mcard['harm'] != 0:
             print('Monster loses '+str(mcard['harm'])+' health')
             
         print()
-        
-        if monster1['health']<1 and me['health']>1:
-            print('You win')
-            return 1
-        elif monster1['health']<1 and me['health']<1:
-            print('Its a draw')
-            print('Boring...')
-            return 1            
-        return 0
+        return monster
 
 
-def monster_card():
-    i=random.sample(list(monster1['attacks']),1)[0]
-    return monster1['attacks'][i]
+def monster_card(monster):
+    i=random.sample(list(monster['attacks']),1)[0]
+    return monster['attacks'][i]
     
 
 
-def check_stats():
-    if me['health']<1:
-        print('You dead')
+def check_stats(monster):
+    if me['health'] < 1 and monster['health'] > 0:
+        return 2
+    elif monster['health']<1 and me['health']>1:
         return 1
+    elif monster['health']<1 and me['health']<1:
+        return 3
+    
     print('Your health is '+str(me['health']))
-    print('Monsters health is '+str(monster1['health']))
+    print('Monsters health is '+str(monster['health']))
     print('Your gold is '+str(me['money']))
     return 0
 
 
-def play_card(crd):
+def play_card(crd, monster):
     me['money']+=-deck[crd]['cost']
     
     if me['health'] + deck[crd]['heal'] > me['maxhp']:
@@ -145,10 +147,21 @@ def play_card(crd):
     
     me['shield'] += deck[crd]['shield']
     
-    monster1['health']+=-deck[crd]['attack']
+    damages=deck[crd]['attack']
+    if damages > monster['shield']:
+        damages =monster['shield']
+    
+    damagep=deck[crd]['attack']-monster['shield']
+    if damagep < 0:
+        damagep = 0
+        
+    monster['health']+=-damagep
     
     if deck[crd]['attack'] != 0:
         print('You hit for '+str(deck[crd]['attack'])+' damage!')
+        
+    if damages != 0:
+        print('Monster blocks '+str(damages)+' damage')
         
     if deck[crd]['heal'] != 0:
         print('You heal '+str(heal)+' health')
@@ -162,6 +175,7 @@ def play_card(crd):
     if deck[crd]['cost'] < 0:
         print('You find '+str(-deck[crd]['cost'])+' gold')
     print()
+    return monster
 
 
 def check_price(crd):
@@ -194,7 +208,8 @@ def start_game():
     with open('monster.yaml') as ymlfile:
         monsters = yaml.load(ymlfile)
         
-    monster1=monsters['bad_guy']
+    i=random.sample(list(monsters),1)[0]
+    monster=monsters[i]
     
     with open('card.yaml') as ymlfile:
         cards = yaml.load(ymlfile)
@@ -205,24 +220,39 @@ def start_game():
         
     me=player['me']
     
-    return me, deck, monster1
+    return me, deck, monster
 
 
 
-me, deck, monster1 = start_game()
+me, deck, current_monster = start_game()
 
 
 print('A monster aproaches you')
 print()
 print('Type !halp for help')
 
-dead=0
-while dead == 0:
-    dead=play_turn()
 
 
+def fight(monster):
+    still_on = 1
+    while still_on == 1:
+        still_on, monster, result = play_turn(monster)
+
+    if result == 1:
+        print('You win')
+        return 1
+    elif result == 2:
+        print('You dead')
+        return 0
+    elif result == 3:
+        print('Its a draw')
+        print('Boring...')
+        return 0
+    else:
+        return 0
 
 
+fight(current_monster)
 
 
 
