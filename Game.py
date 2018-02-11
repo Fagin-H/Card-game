@@ -28,6 +28,7 @@ def play_turn():
     if monster_turn() == 1:
         time.sleep(2)
         return 1
+    time.sleep(2)
     return check_stats()
 
 
@@ -43,21 +44,24 @@ def show_info(crd):
         print('pass          --> skips your turn')
         print()
     
-    if crd == '!show deck':
+    elif crd == '!show deck':
         for card in deck:
             print(card+': '+deck[card]['dcr'])
             print()
-    if crd == '!end':
+    elif crd == '!end':
         return 1
-    if crd == '!show gold':
+    elif crd == '!show gold':
         print('You have '+str(me['money'])+' gold')
         print()
-    if crd == '!show health':
+    elif crd == '!show health':
         print('Your health is '+str(me['health']))
         print()
-    if crd == '!show monster':
+    elif crd == '!show monster':
         print('Monsters health is '+str(monster1['health']))
-        print()        
+        print()
+    else:
+        print('Not a command')
+        print()
     return 0
 
 
@@ -100,6 +104,7 @@ def monster_turn():
             print('Monster loses '+str(mcard['harm'])+' health')
             
         print()
+        
         if monster1['health']<1 and me['health']>1:
             print('You win')
             return 1
@@ -168,13 +173,20 @@ def check_price(crd):
 
 def pick_card():
     crdpicked = 0
+    
     while crdpicked == 0:
         pcard=input('Play a card: ')
+        
+        if pcard[0] == '!':
+            return pcard
+        
         for card in deck:
             if pcard == card or pcard == 'pass':
                 crdpicked = 1
+                
         if crdpicked == 0:
             print('Card not in deck...')
+            
     return pcard
 
 
