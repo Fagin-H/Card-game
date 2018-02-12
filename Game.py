@@ -8,37 +8,50 @@ Created on Sat Feb 10 16:24:32 2018
 import yaml
 import time
 import random
+import copy
 
 
-def play_turn(monster):
+def play_turn(monster, hand):
+    global me
     
     me['shield']=0
     
-    crd=pick_card()
+    print()
+    print('Cards in hand:')
+    print()
+    
+    for card in hand:
+        print(card+': '+hand[card]['dcr'])
+        print()
+      
+    crd=pick_card(hand)
     
     while crd[0] == '!':
-        if show_info(crd, monster) == 1:
+        if show_info(crd, monster, hand) == 1:
             return 0, monster, 0
-        crd=pick_card()
+        crd=pick_card(hand)
     
     if crd != 'pass':
-        crd=check_price(crd)
-        monster = play_card(crd, monster)
+        crd=check_price(crd, hand)
+        monster = play_card(crd, monster, hand)
         time.sleep(2)
         monster = monster_turn(monster)
-    time.sleep(2)
+        time.sleep(2)
     status = check_stats(monster)
+    time.sleep(2)
     if status == 0:
         return 1, monster, status
     else:
         return 0, monster, status
 
 
-def show_info(crd, monster):
+def show_info(crd, monster, hand):
+    global me
     if crd == '!halp':
         print()
         print('List of commands:')
         print('!show deck    --> shows cards in deck')
+        print('!show hand    --> shows cards in hand')
         print('!show gold    --> shows current gold')
         print('!show health  --> shows current health')
         print('!show monster --> shows current monsters health')
@@ -49,6 +62,10 @@ def show_info(crd, monster):
     elif crd == '!show deck':
         for card in deck:
             print(card+': '+deck[card]['dcr'])
+            print()
+    elif crd == '!show hand':
+        for card in hand:
+            print(card+': '+hand[card]['dcr'])
             print()
     elif crd == '!end':
         return 1
@@ -68,6 +85,7 @@ def show_info(crd, monster):
 
 
 def monster_turn(monster):
+    global me
     if monster['health']<1:
         return monster
     else:
@@ -120,11 +138,13 @@ def monster_card(monster):
 
 
 def check_stats(monster):
+    global me
+
     if me['health'] < 1 and monster['health'] > 0:
         return 2
-    elif monster['health']<1 and me['health']>1:
+    elif monster['health'] < 1 and me['health'] > 1:
         return 1
-    elif monster['health']<1 and me['health']<1:
+    elif monster['health'] < 1 and me['health'] < 1:
         return 3
     
     print('Your health is '+str(me['health']))
@@ -133,59 +153,60 @@ def check_stats(monster):
     return 0
 
 
-def play_card(crd, monster):
-    me['money']+=-deck[crd]['cost']
+def play_card(crd, monster, hand):
+    global me
+    me['money']+=-hand[crd]['cost']
     
-    if me['health'] + deck[crd]['heal'] > me['maxhp']:
+    if me['health'] + hand[crd]['heal'] > me['maxhp']:
         heal = me['maxhp'] - me['health']        
         me['health'] = me['maxhp']
     else:
-        me['health'] += deck[crd]['heal']
-        heal = deck[crd]['heal']
+        me['health'] += hand[crd]['heal']
+        heal = hand[crd]['heal']
         
-    me['health'] += -deck[crd]['harm']
+    me['health'] += -hand[crd]['harm']
     
-    me['shield'] += deck[crd]['shield']
+    me['shield'] += hand[crd]['shield']
     
-    damages=deck[crd]['attack']
+    damages=hand[crd]['attack']
     if damages > monster['shield']:
         damages =monster['shield']
     
-    damagep=deck[crd]['attack']-monster['shield']
+    damagep=hand[crd]['attack']-monster['shield']
     if damagep < 0:
         damagep = 0
         
     monster['health']+=-damagep
     
-    if deck[crd]['attack'] != 0:
-        print('You hit for '+str(deck[crd]['attack'])+' damage!')
+    if hand[crd]['attack'] != 0:
+        print('You hit for '+str(hand[crd]['attack'])+' damage!')
         
     if damages != 0:
         print('Monster blocks '+str(damages)+' damage')
         
-    if deck[crd]['heal'] != 0:
+    if hand[crd]['heal'] != 0:
         print('You heal '+str(heal)+' health')
         
-    if deck[crd]['harm'] != 0:
-        print('You lose '+str(deck[crd]['harm'])+' health')
+    if hand[crd]['harm'] != 0:
+        print('You lose '+str(hand[crd]['harm'])+' health')
         
-    if deck[crd]['shield'] != 0:
-        print('You gain '+str(deck[crd]['shield'])+' shield')
+    if hand[crd]['shield'] != 0:
+        print('You gain '+str(hand[crd]['shield'])+' shield')
         
-    if deck[crd]['cost'] < 0:
-        print('You find '+str(-deck[crd]['cost'])+' gold')
+    if hand[crd]['cost'] < 0:
+        print('You find '+str(-hand[crd]['cost'])+' gold')
     print()
     return monster
 
 
-def check_price(crd):
-    while me['money']<deck[crd]['cost']:
+def check_price(crd, hand):
+    while me['money'] < hand[crd]['cost']:
         print('Not enough money')
         crd=pick_card()
     return crd
 
 
-def pick_card():
+def pick_card(hand):
     crdpicked = 0
     
     while crdpicked == 0:
@@ -194,49 +215,50 @@ def pick_card():
         if pcard[0] == '!':
             return pcard
         
-        for card in deck:
+        for card in hand:
             if pcard == card or pcard == 'pass':
                 crdpicked = 1
                 
         if crdpicked == 0:
-            print('Card not in deck...')
+            print('Card not in hand...')
             
     return pcard
 
 
 def start_game():
-    with open('monster.yaml') as ymlfile:
-        monsters = yaml.load(ymlfile)
-        
-    i=random.sample(list(monsters),1)[0]
-    monster=monsters[i]
     
     with open('card.yaml') as ymlfile:
         cards = yaml.load(ymlfile)
-    deck=cards
+    cardpool=cards
     
     with open('player.yaml') as ymlfile:
         player = yaml.load(ymlfile)
         
     me=player['me']
     
-    return me, deck, monster
-
-
-
-me, deck, current_monster = start_game()
-
-
-print('A monster aproaches you')
-print()
-print('Type !halp for help')
-
+    deck = {}
+    
+    for card in me['deck']:
+        deck[card] = cardpool[card]
+    
+    return me, cardpool, deck
 
 
 def fight(monster):
+    global me
+    global deck
     still_on = 1
+
+    check_stats(monster)
+    print()
     while still_on == 1:
-        still_on, monster, result = play_turn(monster)
+        
+        hand={}
+        while len(hand) < hand_size:
+            i=random.sample(list(deck),1)[0]
+            hand[i] = deck[i]
+        
+        still_on, monster, result = play_turn(monster, hand)
 
     if result == 1:
         print('You win')
@@ -252,11 +274,151 @@ def fight(monster):
         return 0
 
 
-fight(current_monster)
 
 
 
 
+ 
+def pick_monster(monster_list):
+    i=random.sample(list(monsters),1)[0]
+    return copy.deepcopy(monsters[i])
+
+
+def shop(cardpool):
+    global me
+    global deck
+    print('==============================')
+    print()
+    print('Welcome')
+    print()
+    time.sleep(2)
+    print('plz buy something')
+    print()
+    time.sleep(2)
+    
+    shop_cards = {}
+    
+    while len(shop_cards) < random.randrange(shop_items) + 1:
+        card = random.sample(list(cardpool),1)[0]
+        shop_cards[card] = cardpool[card]
+    
+    for card in shop_cards:
+        print('Price ' + str(cardpool[card]['price']) + ' gold ----> ' + card + ': ' + cardpool[card]['dcr'])
+        print()
+    
+    choice = ''
+    
+    while choice != 'leave':
+        choice = input('Type buy *card* or leave: ')
+        
+        while choice[0] == '!':
+            if show_info(choice, {'health' 'n/a'}, hand) == 1:
+                return 0
+            choice = input('Type buy *card* or leave: ')
+        
+        if choice == 'leave':
+            print()
+            print('Goodbye...')
+        elif choice not in shop_cards:
+            print()
+            print('Card not in stock')
+        else:
+            print()
+            if choice in deck:
+                print('You already have this card...')
+            elif cardpool[choice]['price'] > me['money']:
+                print('You cant afford this card...')
+            else:
+                print('Enjoy...')
+                me['money'] = me['money'] - cardpool[choice]['price']
+                deck[choice] = cardpool[choice]
+                
+
+def loot(challange):
+    global me
+    haul = random.randrange(challange*5)
+    me['money'] += haul
+    print()
+    print('You gain ' + str(haul) + ' gold')
+    return me
+
+
+                
+def play_game():
+    global me
+    global deck
+    alive = 1
+    count = 0
+    print('A monster aproaches you')
+    print()
+    print('Type !halp for help')
+    print()
+    current_monster = pick_monster(monsters)
+    alive = fight(current_monster)
+    if alive == 1:
+        count += 1
+        me = loot(current_monster['challange'])
+    while alive == 1:    
+        count += 1
+        choice0 = random.randrange(2)
+        choice1 = random.randrange(2)
+        
+        print()
+        print('You see 2 paths ahead')
+        print()
+        print('Path 1: ' + choices[choice0] + ', path 2: ' + choices[choice1])
+        print()
+        
+        choice = input('Choose a path... ')
+        
+        while choice[0] == '!':
+            if show_info(choice, {'health' 'n/a'}, hand) == 1:
+                return
+            choice = input('Choose a path... ')
+        
+        while choice != '1' and choice != '2':
+            print()
+            print('Not a valid choice')
+            print()
+            choice = input('Choose a path... ')
+        
+        if choice == '1':
+            if choice0 == 0:
+                if shop(cardpool) == 0:
+                    return
+            else:
+                print()
+                print('A monster aproaches you')
+                print()
+                current_monster = pick_monster(monsters)
+                alive = fight(current_monster)
+                if alive == 1:
+                    loot(current_monster['challange'])
+        else:
+            if choice1 == 0:
+                if shop(cardpool) == 0:
+                    return
+            else:
+                print()
+                print('A monster aproaches you')
+                print()
+                current_monster = pick_monster(monsters)
+                alive = fight(current_monster)
+                if alive == 1:
+                 loot(current_monster['challange'])
+                
+    print('You suvived ' + str(count) + ' rounds')
+        
+        
+        
+with open('monster.yaml') as ymlfile:
+    monsters = yaml.load(ymlfile)
+        
+choices = ['go to a shop', 'fight a monster']
+me, cardpool, deck = start_game()
+hand_size = 3
+hand={}
+shop_items = 3
 
 
 

@@ -5,6 +5,7 @@ smash:
     shield: 0
     harm: 0
     rarity: 1
+    price: 2
     dcr: 'Hits for 3 damage, costs 1 gold.'
 bash:
     cost: 5
@@ -13,6 +14,7 @@ bash:
     shield: 0
     harm: 0
     rarity: 2
+    price: 5
     dcr: 'Hits for 10 damage, costs 5 gold.'
 chill:
     cost: 0
@@ -21,14 +23,16 @@ chill:
     shield: 0
     harm: 0
     rarity: 1
+    price: 3
     dcr: 'Heals 3 health, costs no gold.'
-headbut:
+headbutt:
     cost: 1
     attack: 5
     heal: 0
     shield: 0
     harm: 2
     rarity: 1
+    price: 3
     dcr: 'Hits for 5 damage, harms for 2, costs 1 gold'
 loot:
     cost: -3
@@ -37,6 +41,7 @@ loot:
     shield: 0
     harm: 0
     rarity: 1
+    price: 5
     dcr: 'Gain 3 gold'
 block:
     cost: 1
@@ -45,6 +50,7 @@ block:
     shield: 5
     harm: 0
     rarity: 1
+    price: 4
     dcr: 'Gain 5 shield'
 shield bash:
     cost: 2
@@ -53,4 +59,5 @@ shield bash:
     shield: 3
     harm: 0
     rarity: 1
+    price: 6
     dcr: 'Hits for 3 damage, gain 3 shield'

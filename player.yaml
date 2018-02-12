@@ -3,3 +3,8 @@ me:
     money: 5
     maxhp: 15
     shield: 0
+    deck: 
+        smash:
+        loot:
+        bash:
+        chill:
