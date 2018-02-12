@@ -11,6 +11,7 @@ import random
 import copy
 
 
+
 def play_turn(monster, hand):
     global me
     
@@ -100,7 +101,7 @@ def monster_turn(monster):
                 
         monster['health']+=-mcard['harm']
         
-        monster['shield'] += mcard['shield']
+        monster['shield'] = mcard['shield']
         
         damages=mcard['attack']
         if damages > me['shield']:
@@ -202,7 +203,7 @@ def play_card(crd, monster, hand):
 def check_price(crd, hand):
     while me['money'] < hand[crd]['cost']:
         print('Not enough money')
-        crd=pick_card()
+        crd=pick_card(hand)
     return crd
 
 
@@ -295,6 +296,8 @@ def shop(cardpool):
     print('plz buy something')
     print()
     time.sleep(2)
+    print('You have '+str(me['money'])+' gold')
+    print()
     
     shop_cards = {}
     
@@ -309,12 +312,12 @@ def shop(cardpool):
     choice = ''
     
     while choice != 'leave':
-        choice = input('Type buy *card* or leave: ')
+        choice = input('Type *card* or leave: ')
         
         while choice[0] == '!':
             if show_info(choice, {'health' 'n/a'}, hand) == 1:
                 return 0
-            choice = input('Type buy *card* or leave: ')
+            choice = input('Type *card* or leave: ')
         
         if choice == 'leave':
             print()
@@ -347,6 +350,9 @@ def loot(challange):
 def play_game():
     global me
     global deck
+    global cardpool
+    me, cardpool, deck = start_game()
+
     alive = 1
     count = 0
     print('A monster aproaches you')

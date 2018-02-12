@@ -51,7 +51,7 @@ block:
     harm: 0
     rarity: 1
     price: 4
-    dcr: 'Gain 5 shield'
+    dcr: 'Gain 5 shield, costs 1 gold'
 shield bash:
     cost: 2
     attack: 3
@@ -60,4 +60,4 @@ shield bash:
     harm: 0
     rarity: 1
     price: 6
-    dcr: 'Hits for 3 damage, gain 3 shield'
+    dcr: 'Hits for 3 damage, gain 3 shield, costs 2 gold'

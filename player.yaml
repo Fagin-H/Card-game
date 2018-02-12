@@ -1,7 +1,7 @@
 me:
-    health: 15
-    money: 5
-    maxhp: 15
+    health: 40
+    money: 15
+    maxhp: 40
     shield: 0
     deck: 
         smash:
