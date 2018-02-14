@@ -3,21 +3,25 @@ devil:
     health: 15
     maxhp: 15
     shield: 0
+    poison: 0
     attacks:
         hit:
             attack: 2
+            poison: 0
             heal: 0
             shield: 0
             harm: 0
             freq: 2
         heal:
             attack: 0
+            poison: 0
             heal: 3
             shield: 0
             harm: 0
             freq: 1
         raw:
             attack: 6
+            poison: 0
             heal: 0
             shield: 0
             harm: 4
@@ -28,21 +32,25 @@ pack of rats:
     health: 10
     maxhp: 10
     shield: 0
+    poison: 0
     attacks:
         bite:
             attack: 2
+            poison: 0
             heal: 0
             shield: 0
             harm: 0
             freq: 2
         scatter:
             attack: 0
+            poison: 0
             heal: 0
             shield: 2
             harm: 0
-            fre1: 1
+            freq: 1
         swarm:
             attack: 4
+            poison: 1
             heal: 0
             shield: 0
             harm: 1
@@ -53,27 +61,32 @@ slime:
     health: 20
     maxhp: 20
     shield: 0
+    poison: 0
     attacks:
         lick:
             attack: 3
+            poison: 0
             heal: 3
             shield: 0
             harm: 0
             freq: 2
         fart:
-            attack: 6
+            attack: 4
+            poison: 2
             heal: 0
             shield: 0
             harm: 2
             freq: 1
         slam:
             attack: 4
+            poison: 0
             heal: 0
             shield: 0
             harm: 0
             freq: 2
         liquify:
             attack: 0
+            poison: 0
             heal: 0
             shield: 4
             harm: 0
@@ -84,15 +97,18 @@ ogre:
     health: 25
     maxhp: 25
     shield: 0
+    poison: 0
     attacks:
         smash:
             attack: 6
+            poison: 0
             heal: 0
             shield: 0
             harm: 0
             freq: 5
         bash:
             attack: 10
+            poison: 0
             heal: 0
             shield: 0
             harm: 5

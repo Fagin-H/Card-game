@@ -3,6 +3,7 @@ me:
     money: 15
     maxhp: 40
     shield: 0
+    poison: 0
     deck: 
         smash:
         loot:

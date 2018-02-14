@@ -4,6 +4,7 @@ smash:
     heal: 0
     shield: 0
     harm: 0
+    poison: 0
     rarity: 1
     price: 2
     dcr: 'Hits for 3 damage, costs 1 gold.'
@@ -13,6 +14,7 @@ bash:
     heal: 0
     shield: 0
     harm: 0
+    poison: 0
     rarity: 2
     price: 5
     dcr: 'Hits for 10 damage, costs 5 gold.'
@@ -22,6 +24,7 @@ chill:
     heal: 3
     shield: 0
     harm: 0
+    poison: 0
     rarity: 1
     price: 3
     dcr: 'Heals 3 health, costs no gold.'
@@ -31,6 +34,7 @@ headbutt:
     heal: 0
     shield: 0
     harm: 2
+    poison: 0
     rarity: 1
     price: 3
     dcr: 'Hits for 5 damage, harms for 2, costs 1 gold'
@@ -40,6 +44,7 @@ loot:
     heal: 0
     shield: 0
     harm: 0
+    poison: 0
     rarity: 1
     price: 5
     dcr: 'Gain 3 gold'
@@ -49,6 +54,7 @@ block:
     heal: 0
     shield: 5
     harm: 0
+    poison: 0
     rarity: 1
     price: 4
     dcr: 'Gain 5 shield, costs 1 gold'
@@ -58,6 +64,17 @@ shield bash:
     heal: 0
     shield: 3
     harm: 0
+    poison: 0
     rarity: 1
     price: 6
     dcr: 'Hits for 3 damage, gain 3 shield, costs 2 gold'
+gas cloud:
+    cost: 3
+    attack: 0
+    heal: 0
+    shield: 0
+    harm: 0
+    poison: 2
+    rarity: 1
+    price: 5
+    dcr: 'Monster gets 2 poisen, costs 3 gold'

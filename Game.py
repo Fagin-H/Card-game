@@ -49,6 +49,7 @@ def show_info(crd, monster, hand):
         print('!show hand       --> shows cards in hand')
         print('!show gold       --> shows current gold')
         print('!show health     --> shows current health')
+        print('!show poison     --> shows current poison')
         print('!show monster    --> shows current monsters health')
         print('!save *filename* --> saves game')
         print('!end             --> quit game')
@@ -74,6 +75,9 @@ def show_info(crd, monster, hand):
         print()
     elif crd == '!show health':
         print('Your health is '+str(me['health']))
+        print()
+    elif crd == '!show poison':
+        print('Your poison is '+str(me['poison']))
         print()
     elif crd == '!show monster':
         if monster == {}:
@@ -106,6 +110,15 @@ def monster_turn(monster):
     else:
         mcard=monster_card(monster)
         
+        poison_damage = me['poison']
+        
+        me['health'] -= poison_damage
+          
+        if poison_damage != 0:
+            print('You take '+str(poison_damage)+' poison damage!')
+            if me['health'] < 1:
+                return monster
+        
         if monster['health'] + mcard['heal'] > monster['maxhp']:
             heal = monster['maxhp'] - monster['health']
             monster['health'] = monster['maxhp']
@@ -126,12 +139,22 @@ def monster_turn(monster):
             damagep = 0
             
         me['health']+=-damagep
+          
+        poison_damage = monster['poison']
+        
+        monster['health'] -= poison_damage
+               
+        me['poison'] += mcard['poison']
+
         
         if mcard['attack'] != 0:
             print('Monster hits for '+str(mcard['attack'])+' damage!')
         
         if damages != 0:
             print('You block '+str(damages)+' damage')
+        
+        if mcard['poison'] != 0:
+            print('You take  '+str(mcard['poison'])+' poison!')
             
         if mcard['heal'] != 0:
             print('Monster heals '+str(heal)+' health')
@@ -141,6 +164,9 @@ def monster_turn(monster):
             
         if mcard['harm'] != 0:
             print('Monster loses '+str(mcard['harm'])+' health')
+            
+        if poison_damage != 0:
+            print('Monster takes '+str(poison_damage)+' poison damage!')
             
         print()
         return monster
@@ -168,17 +194,19 @@ def check_stats(monster):
         return 3
     
     print('Your health is '+str(me['health']))
+    print('Your poison is '+str(me['poison']))
     print('Monsters health is '+str(monster['health']))
+    print('Monsters poison is '+str(monster['poison']))
     print('Your gold is '+str(me['money']))
     return 0
 
 
 def play_card(crd, monster, hand):
-    me['money']+=-hand[crd]['cost']
+    me['money'] -= hand[crd]['cost']
     
     h_gained = gain_health(hand[crd]['heal'])
         
-    me['health'] += -hand[crd]['harm']
+    me['health'] -= hand[crd]['harm']
     
     me['shield'] = hand[crd]['shield']
     
@@ -190,13 +218,18 @@ def play_card(crd, monster, hand):
     if damagep < 0:
         damagep = 0
         
-    monster['health']+=-damagep
+    monster['health'] -= damagep
+           
+    monster['poison'] += hand[crd]['poison']
     
     if hand[crd]['attack'] != 0:
         print('You hit for '+str(hand[crd]['attack'])+' damage!')
         
     if damages != 0:
         print('Monster blocks '+str(damages)+' damage')
+        
+    if hand[crd]['poison'] != 0:
+        print('Monster gets '+str(hand[crd]['poison'])+' poison!')
         
     if hand[crd]['heal'] != 0:
         print('You heal '+str(h_gained)+' health')
@@ -273,6 +306,7 @@ def fight(monster):
             hand[i] = deck[i]
         
         still_on, monster, result = play_turn(monster, hand)
+    me['poison'] = 0
 
     if result == 1:
         print('You win')
@@ -390,7 +424,7 @@ def get_input(text, monster, hand):
         
 
 def rest():
-    h_gain = gain_health(me['health']/2)
+    h_gain = gain_health(me['maxhp']/3)
     print()
     print('You rest at an makeshift campsite')
     print()
