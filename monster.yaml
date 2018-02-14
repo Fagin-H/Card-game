@@ -9,16 +9,44 @@ devil:
             heal: 0
             shield: 0
             harm: 0
+            freq: 2
         heal:
             attack: 0
             heal: 3
             shield: 0
             harm: 0
+            freq: 1
         raw:
             attack: 6
             heal: 0
             shield: 0
             harm: 4
+            freq: 1
+    challange: 2
+pack of rats:
+    name: pack of rats
+    health: 10
+    maxhp: 10
+    shield: 0
+    attacks:
+        bite:
+            attack: 2
+            heal: 0
+            shield: 0
+            harm: 0
+            freq: 2
+        scatter:
+            attack: 0
+            heal: 0
+            shield: 2
+            harm: 0
+            fre1: 1
+        swarm:
+            attack: 4
+            heal: 0
+            shield: 0
+            harm: 1
+            freq: 1
     challange: 1
 slime:
     name: slime
@@ -31,19 +59,42 @@ slime:
             heal: 3
             shield: 0
             harm: 0
+            freq: 2
         fart:
             attack: 6
             heal: 0
             shield: 0
             harm: 2
+            freq: 1
         slam:
             attack: 4
             heal: 0
             shield: 0
             harm: 0
+            freq: 2
         liquify:
             attack: 0
             heal: 0
             shield: 4
             harm: 0
+            freq: 1
     challange: 3
+ogre:
+    name: ogre
+    health: 25
+    maxhp: 25
+    shield: 0
+    attacks:
+        smash:
+            attack: 6
+            heal: 0
+            shield: 0
+            harm: 0
+            freq: 5
+        bash:
+            attack: 10
+            heal: 0
+            shield: 0
+            harm: 5
+            freq: 1
+    challange: 4

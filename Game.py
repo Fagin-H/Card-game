@@ -147,7 +147,14 @@ def monster_turn(monster):
 
 
 def monster_card(monster):
-    i=random.sample(list(monster['attacks']),1)[0]
+    card_choices = list(monster['attacks'])
+    probs = []
+    for card_choice in card_choices:
+        probs.append(monster['attacks'][card_choice]['freq'])
+    probs = np.array(probs)
+    probs = probs/(np.sum(probs))
+        
+    i=np.random.choice(card_choices, 1, p=probs)[0]
     return monster['attacks'][i]
     
 
