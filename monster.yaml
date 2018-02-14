@@ -1,4 +1,5 @@
-bad_guy:
+devil:
+    name: devil
     health: 15
     maxhp: 15
     shield: 0
@@ -19,7 +20,8 @@ bad_guy:
             shield: 0
             harm: 4
     challange: 1
-bad_guy2:
+slime:
+    name: slime
     health: 20
     maxhp: 20
     shield: 0
@@ -30,16 +32,16 @@ bad_guy2:
             shield: 0
             harm: 0
         fart:
-            attack: 4
-            heal: 0
-            shield: 0
-            harm: 2
-        slap:
             attack: 6
             heal: 0
             shield: 0
+            harm: 2
+        slam:
+            attack: 4
+            heal: 0
+            shield: 0
             harm: 0
-        dodge:
+        liquify:
             attack: 0
             heal: 0
             shield: 4

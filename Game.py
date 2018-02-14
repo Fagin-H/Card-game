@@ -9,13 +9,11 @@ import yaml
 import time
 import random
 import copy
+import numpy as np
 
 
 
-def play_turn(monster, hand):
-    global me
-    
-    me['shield']=0
+def play_turn(monster, hand):    
     
     print()
     print('Cards in hand:')
@@ -25,19 +23,16 @@ def play_turn(monster, hand):
         print(card+': '+hand[card]['dcr'])
         print()
       
-    crd=pick_card(hand)
+    crd, end = pick_card(hand, monster)
     
-    while crd[0] == '!':
-        if show_info(crd, monster, hand) == 1:
-            return 0, monster, 0
-        crd=pick_card(hand)
+    if end == 1:
+        return 0, monster, 0
     
     if crd != 'pass':
-        crd=check_price(crd, hand)
         monster = play_card(crd, monster, hand)
         time.sleep(2)
-        monster = monster_turn(monster)
-        time.sleep(2)
+    monster = monster_turn(monster)
+    time.sleep(2)
     status = check_stats(monster)
     time.sleep(2)
     if status == 0:
@@ -47,17 +42,17 @@ def play_turn(monster, hand):
 
 
 def show_info(crd, monster, hand):
-    global me
+    print()
     if crd == '!halp':
-        print()
         print('List of commands:')
-        print('!show deck    --> shows cards in deck')
-        print('!show hand    --> shows cards in hand')
-        print('!show gold    --> shows current gold')
-        print('!show health  --> shows current health')
-        print('!show monster --> shows current monsters health')
-        print('!end          --> quit game')
-        print('pass          --> skips your turn')
+        print('!show deck       --> shows cards in deck')
+        print('!show hand       --> shows cards in hand')
+        print('!show gold       --> shows current gold')
+        print('!show health     --> shows current health')
+        print('!show monster    --> shows current monsters health')
+        print('!save *filename* --> saves game')
+        print('!end             --> quit game')
+        print('pass             --> skips your turn')
         print()
     
     elif crd == '!show deck':
@@ -65,9 +60,13 @@ def show_info(crd, monster, hand):
             print(card+': '+deck[card]['dcr'])
             print()
     elif crd == '!show hand':
-        for card in hand:
-            print(card+': '+hand[card]['dcr'])
+        if hand == {}:
+            print('You are not in combat')
             print()
+        else:
+            for card in hand:
+                print(card+': '+hand[card]['dcr'])
+                print()
     elif crd == '!end':
         return 1
     elif crd == '!show gold':
@@ -77,8 +76,24 @@ def show_info(crd, monster, hand):
         print('Your health is '+str(me['health']))
         print()
     elif crd == '!show monster':
-        print('Monsters health is '+str(monster['health']))
-        print()
+        if monster == {}:
+            print('You are not in combat')
+            print()
+        else:
+            print('Monsters health is '+str(monster['health']))
+            print()
+    elif len(crd) > 7:
+        if crd[:6] == '!save ':
+            if monster == {}:
+                save_game((crd+ ' ')[6:-1], count)
+                print('Game saved')
+                print()
+            else:
+                print('Cant save in combat')
+                print()
+        else:
+            print('Not a command')
+            print()
     else:
         print('Not a command')
         print()
@@ -86,7 +101,6 @@ def show_info(crd, monster, hand):
 
 
 def monster_turn(monster):
-    global me
     if monster['health']<1:
         return monster
     else:
@@ -139,8 +153,6 @@ def monster_card(monster):
 
 
 def check_stats(monster):
-    global me
-
     if me['health'] < 1 and monster['health'] > 0:
         return 2
     elif monster['health'] < 1 and me['health'] > 1:
@@ -155,19 +167,13 @@ def check_stats(monster):
 
 
 def play_card(crd, monster, hand):
-    global me
     me['money']+=-hand[crd]['cost']
     
-    if me['health'] + hand[crd]['heal'] > me['maxhp']:
-        heal = me['maxhp'] - me['health']        
-        me['health'] = me['maxhp']
-    else:
-        me['health'] += hand[crd]['heal']
-        heal = hand[crd]['heal']
+    h_gained = gain_health(hand[crd]['heal'])
         
     me['health'] += -hand[crd]['harm']
     
-    me['shield'] += hand[crd]['shield']
+    me['shield'] = hand[crd]['shield']
     
     damages=hand[crd]['attack']
     if damages > monster['shield']:
@@ -186,7 +192,7 @@ def play_card(crd, monster, hand):
         print('Monster blocks '+str(damages)+' damage')
         
     if hand[crd]['heal'] != 0:
-        print('You heal '+str(heal)+' health')
+        print('You heal '+str(h_gained)+' health')
         
     if hand[crd]['harm'] != 0:
         print('You lose '+str(hand[crd]['harm'])+' health')
@@ -200,30 +206,28 @@ def play_card(crd, monster, hand):
     return monster
 
 
-def check_price(crd, hand):
-    while me['money'] < hand[crd]['cost']:
-        print('Not enough money')
-        crd=pick_card(hand)
-    return crd
 
-
-def pick_card(hand):
+def pick_card(hand, monster):
     crdpicked = 0
     
     while crdpicked == 0:
-        pcard=input('Play a card: ')
-        
-        if pcard[0] == '!':
-            return pcard
-        
+        pcard, end = get_input('Play a card: ', monster, hand)
+        if end == 1:
+            return '', 1
+                
         for card in hand:
             if pcard == card or pcard == 'pass':
                 crdpicked = 1
+                if pcard == 'pass':
+                    return pcard, 0
+                if me['money'] < hand[pcard]['cost']:
+                    print('Not enough money')
+                    crdpicked = 0
                 
         if crdpicked == 0:
             print('Card not in hand...')
             
-    return pcard
+    return pcard, 0
 
 
 def start_game():
@@ -246,9 +250,11 @@ def start_game():
 
 
 def fight(monster):
-    global me
-    global deck
     still_on = 1
+    
+    print()
+    print('A ' + monster['name'] + ' aproaches you')
+    print()
 
     check_stats(monster)
     print()
@@ -286,8 +292,6 @@ def pick_monster(monster_list):
 
 
 def shop(cardpool):
-    global me
-    global deck
     print('==============================')
     print()
     print('Welcome')
@@ -308,20 +312,29 @@ def shop(cardpool):
     for card in shop_cards:
         print('Price ' + str(cardpool[card]['price']) + ' gold ----> ' + card + ': ' + cardpool[card]['dcr'])
         print()
-    
+    print()
+    print('Services:')
+    print()
+    print('Price 10 gold ----> heal 10 health')
     choice = ''
     
     while choice != 'leave':
-        choice = input('Type *card* or leave: ')
+        choice, ext = get_input('Type *card*, heal, or leave: ', {}, {})
         
-        while choice[0] == '!':
-            if show_info(choice, {'health' 'n/a'}, hand) == 1:
-                return 0
-            choice = input('Type *card* or leave: ')
+        if ext == 1:
+            return 0
         
         if choice == 'leave':
             print()
             print('Goodbye...')
+        elif choice == 'heal':
+            print()
+            if me['money'] < 10:
+                print('You cant afford this...')
+            else:
+                h_gained = gain_health(10)
+                me['money'] -= 10
+                print('You gain ' + str(h_gained) + ' health')
         elif choice not in shop_cards:
             print()
             print('Card not in stock')
@@ -335,96 +348,151 @@ def shop(cardpool):
                 print('Enjoy...')
                 me['money'] = me['money'] - cardpool[choice]['price']
                 deck[choice] = cardpool[choice]
-                
+    return 1
 
-def loot(challange):
-    global me
+def gain_health(ammount):
+    h_gain = int(ammount)
+    if h_gain + me['health'] > me['maxhp']:
+        h_gain = me['maxhp'] - me['health']
+    me['health'] += h_gain  
+    return h_gain
+
+
+def loot(challange, count):
     haul = random.randrange(challange*5)
     me['money'] += haul
+    count += 1
     print()
     print('You gain ' + str(haul) + ' gold')
-    return me
+    return count
+
+def get_input(text, monster, hand):
+    print()
+    att_input = input(text)
+    while att_input == '':
+        print()
+        att_input = input(text)
+    if att_input[0] == '!':
+        end = show_info(att_input, monster, hand)
+        if end == 1:
+            return att_input, 1
+        att_input, misc = get_input(text, monster, hand)
+        if misc == 1:
+            return att_input, 1
+    return att_input, 0
+        
+
+def rest():
+    h_gain = gain_health(me['health']/2)
+    print()
+    print('You rest at an makeshift campsite')
+    print()
+    print('You gain ' + str(h_gain) + ' health')
+    print()
+    time.sleep(2)
+
 
 
                 
-def play_game():
-    global me
-    global deck
-    global cardpool
+def play_game(me1 = '', deck1 = '', count1 = ''):
     me, cardpool, deck = start_game()
-
     alive = 1
-    count = 0
-    print('A monster aproaches you')
-    print()
-    print('Type !halp for help')
-    print()
-    current_monster = pick_monster(monsters)
-    alive = fight(current_monster)
-    if alive == 1:
-        count += 1
-        me = loot(current_monster['challange'])
+    global count
+    
+    if me1 != '':
+        me = me1
+        deck = deck1
+        count = count1
+    else:
+        count = 0
+        print()
+        print('Type !halp for help')
+        print()
+        current_monster = pick_monster(monsters)
+        alive = fight(current_monster)
+        if alive == 1:
+            count = loot(current_monster['challange'], count)
     while alive == 1:    
-        count += 1
-        choice0 = random.randrange(2)
-        choice1 = random.randrange(2)
+        choice1, choice2 = np.random.choice(range(len(choices)), 2, p=prob_dist, replace = False)
         
         print()
         print('You see 2 paths ahead')
         print()
-        print('Path 1: ' + choices[choice0] + ', path 2: ' + choices[choice1])
+        print('Path 1: ' + choices[choice1] + ', path 2: ' + choices[choice2])
         print()
         
-        choice = input('Choose a path... ')
-        
-        while choice[0] == '!':
-            if show_info(choice, {'health' 'n/a'}, hand) == 1:
-                return
-            choice = input('Choose a path... ')
+        choice, ext = get_input('Choose a path... ', {}, {})
+        if ext == 1:
+            return
         
         while choice != '1' and choice != '2':
             print()
             print('Not a valid choice')
             print()
-            choice = input('Choose a path... ')
-        
+            choice, ext = get_input('Choose a path... ', {}, {})
+            if ext == 1:
+                return
+                    
         if choice == '1':
-            if choice0 == 0:
-                if shop(cardpool) == 0:
-                    return
-            else:
-                print()
-                print('A monster aproaches you')
-                print()
-                current_monster = pick_monster(monsters)
-                alive = fight(current_monster)
-                if alive == 1:
-                    loot(current_monster['challange'])
-        else:
-            if choice1 == 0:
-                if shop(cardpool) == 0:
-                    return
-            else:
-                print()
-                print('A monster aproaches you')
-                print()
-                current_monster = pick_monster(monsters)
-                alive = fight(current_monster)
-                if alive == 1:
-                 loot(current_monster['challange'])
+            choice = choice1
+        elif choice == '2':
+            choice = choice2
+            
+        
+        if choice == 0:
+            alive = shop(cardpool)
+        elif choice == 1:
+            current_monster = pick_monster(monsters)
+            alive = fight(current_monster)
+            if alive == 1:
+                count = loot(current_monster['challange'], count)
+        elif choice == 2:
+            rest()
                 
-    print('You suvived ' + str(count) + ' rounds')
+    print('You suvived ' + str(count) + ' battles')
+    with open('highscore.yml', 'r+') as outfile:
+        high_score = yaml.load(outfile)
+    f = open('highscore.yml', 'w').close()
+    with open('highscore.yml', 'r+') as outfile:
+        if high_score < count:
+            print()
+            print('New high score!')
+            yaml.dump(count, outfile, default_flow_style=False)
+        else:
+            print()
+            print('High score: ' + str(high_score))
+            yaml.dump(high_score, outfile, default_flow_style=False)
         
-        
+
+def save_game(save_name, score):
+    
+    save_data={'player': me, 'deck': deck, 'score': score}
+    f = open('savegame/' + save_name + '.yml', 'w').close()
+    with open('savegame/' + save_name + '.yml', 'w') as outfile:
+        yaml.dump(save_data, outfile, default_flow_style=False)
+
+def load_game(save_name):
+    me, cardpool, deck = start_game()
+    with open('savegame/' + save_name + '.yml') as outfile:
+        save_data = yaml.load(outfile)
+    deck = save_data['deck']
+    me['health'] = save_data['player']['health']
+    me['money'] = save_data['player']['money']
+    score = save_data['score']
+    play_game(me, deck, score)
+       
         
 with open('monster.yaml') as ymlfile:
     monsters = yaml.load(ymlfile)
         
-choices = ['go to a shop', 'fight a monster']
+choices = ['go to a shop', 'fight a monster', 'take a rest']
+prob_dist = [0.3, 0.5, 0.2]
+
 me, cardpool, deck = start_game()
 hand_size = 3
 hand={}
 shop_items = 3
+
 
 
 

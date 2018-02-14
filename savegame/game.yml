@@ -1,0 +1,57 @@
+deck:
+  bash:
+    attack: 10
+    cost: 5
+    dcr: Hits for 10 damage, costs 5 gold.
+    harm: 0
+    heal: 0
+    price: 5
+    rarity: 2
+    shield: 0
+  chill:
+    attack: 0
+    cost: 0
+    dcr: Heals 3 health, costs no gold.
+    harm: 0
+    heal: 3
+    price: 3
+    rarity: 1
+    shield: 0
+  loot:
+    attack: 0
+    cost: -3
+    dcr: Gain 3 gold
+    harm: 0
+    heal: 0
+    price: 5
+    rarity: 1
+    shield: 0
+  shield bash:
+    attack: 3
+    cost: 2
+    dcr: Hits for 3 damage, gain 3 shield, costs 2 gold
+    harm: 0
+    heal: 0
+    price: 6
+    rarity: 1
+    shield: 3
+  smash:
+    attack: 3
+    cost: 1
+    dcr: Hits for 3 damage, costs 1 gold.
+    harm: 0
+    heal: 0
+    price: 2
+    rarity: 1
+    shield: 0
+player:
+  deck:
+    bash: null
+    chill: null
+    loot: null
+    smash: null
+  health: 40
+  maxhp: 40
+  money: 8
+  shield: 0
+score: 2
