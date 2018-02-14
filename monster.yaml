@@ -92,8 +92,8 @@ slime:
             harm: 0
             freq: 1
     challange: 3
-ogre:
-    name: ogre
+huge ogre:
+    name: huge ogre
     health: 25
     maxhp: 25
     shield: 0
@@ -114,3 +114,61 @@ ogre:
             harm: 5
             freq: 1
     challange: 4
+green ooze:
+    name: green ooze
+    health: 15
+    maxhp: 15
+    shield: 0
+    poison: 0
+    attacks:
+        poison hit:
+            attack: 3
+            poison: 1
+            heal: 0
+            shield: 0
+            harm: 0
+            freq: 1
+        poison heal:
+            attack: 0
+            poison: 1
+            heal: 3
+            shield: 0
+            harm: 0
+            freq: 1
+        poison:
+            attack: 0
+            poison: 3
+            heal: 0
+            shield: 0
+            harm: 0
+            freq: 1
+    challange: 2
+shamon:
+    name: shamon
+    health: 10
+    maxhp: 100
+    shield: 0
+    poison: 0
+    attacks:
+        life drain:
+            attack: 3
+            poison: 0
+            heal: 3
+            shield: 0
+            harm: 0
+            freq: 4
+        healing ritual:
+            attack: 0
+            poison: 0
+            heal: 6
+            shield: 0
+            harm: 0
+            freq: 1
+        healing dodge:
+            attack: 0
+            poison: 0
+            heal: 3
+            shield: 3
+            harm: 0
+            freq: 1
+    challange: 2

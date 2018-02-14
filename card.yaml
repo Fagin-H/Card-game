@@ -37,7 +37,7 @@ headbutt:
     poison: 0
     rarity: 1
     price: 3
-    dcr: 'Hits for 5 damage, harms for 2, costs 1 gold'
+    dcr: 'Hits for 5 damage, harms for 2 damage, costs 1 gold'
 loot:
     cost: -3
     attack: 0
@@ -69,7 +69,7 @@ shield bash:
     price: 6
     dcr: 'Hits for 3 damage, gain 3 shield, costs 2 gold'
 gas cloud:
-    cost: 3
+    cost: 2
     attack: 0
     heal: 0
     shield: 0
@@ -77,4 +77,34 @@ gas cloud:
     poison: 2
     rarity: 1
     price: 5
-    dcr: 'Monster gets 2 poisen, costs 3 gold'
+    dcr: 'Monster gets 2 poison, costs 3 gold'
+poison stab:
+    cost: 3
+    attack: 3
+    heal: 0
+    shield: 0
+    harm: 0
+    poison: 2
+    rarity: 1
+    price: 7
+    dcr: 'Hits for 3 damage and monster gets 2 poison, costs 3 gold'
+mega blast:
+    cost: 10
+    attack: 20
+    heal: 0
+    shield: 0
+    harm: 20
+    poison: 10
+    rarity: 4
+    price: 15
+    dcr: 'Hits for 20 damage, harms for 20 damage, monster gets 10 poison, costs 10 gold'
+thief slash:
+    cost: -2
+    attack: 2
+    heal: 0
+    shield: 0
+    harm: 0
+    poison: 0
+    rarity: 1
+    price: 4
+    dcr: 'Monster takes 2 damage, gain 2 gold'
